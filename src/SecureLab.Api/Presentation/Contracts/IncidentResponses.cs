@@ -24,7 +24,3 @@ public sealed record IncidentCommentResponse(
     string AuthorDisplayName,
     string Text,
     DateTimeOffset CreatedAtUtc);
-
-public sealed record IncidentSeveritySummaryResponse(
-    string Severity,
-    int Count);
