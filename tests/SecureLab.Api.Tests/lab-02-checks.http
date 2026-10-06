@@ -107,3 +107,9 @@ GET {{baseUrl}}/api/incidents/search?sortBy=price
 
 ###T-05 — Перевірка сортування
 GET {{baseUrl}}/api/incidents/search?sortBy=createdAtUtc
+
+###T-05 — Перевірка сортування
+GET {{baseUrl}}/api/incidents/search?sortBy=severity
+
+###T-05 — Перевірка 
+GET {{baseUrl}}/api/incidents/search?sortBy=status
