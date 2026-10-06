@@ -1,0 +1,60 @@
+@baseUrl = http://localhost:5080
+
+### T-01 — коректне створення інциденту
+
+POST {{baseUrl}}/api/incidents
+Content-Type: application/json
+
+{
+  "title": "Навчальний інцидент T01",
+  "description": "Це штучний навчальний опис інциденту для перевірки коректного створення.",
+  "severity": "Low",
+  "occurredAtUtc": "2026-10-06T16:00:00Z"
+}
+
+### T-02
+POST {{baseUrl}}/api/incidents
+Content-Type: application/json
+
+{
+  "title": " ",
+  "description": "",
+  "severity": "7",
+  "occurredAtUtc": "2030-01-01T10:00:00Z"
+}
+
+### T-09(bad)
+
+POST {{baseUrl}}/api/incidents
+Content-Type: application/json
+
+{
+  "title": "High incident 39",
+  "description": "123456789012345678901234567890123456789",
+  "severity": "High",
+  "occurredAtUtc": "2026-10-06T16:00:00Z"
+}
+
+### T-09(good)
+
+POST {{baseUrl}}/api/incidents
+Content-Type: application/json
+
+{
+  "title": "High incident 40",
+  "description": "1234567890123456789012345678901234567890",
+  "severity": "High",
+  "occurredAtUtc": "2026-10-06T16:00:00Z"
+}
+
+### T-03
+
+POST {{baseUrl}}/api/incidents
+Content-Type: application/json
+
+{
+  "title": "Підозрілий лист із вкладенням",
+  "description": "Новий опис для перевірки конфлікту однакового заголовка.",
+  "severity": "Low",
+  "occurredAtUtc": "2026-10-06T16:00:00Z"
+}
