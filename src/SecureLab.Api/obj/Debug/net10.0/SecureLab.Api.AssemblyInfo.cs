@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SecureLab.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d0fedbf183f21a67cf1be481e295b7e5ba607a71")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aabf6270ed2d6109d9e87c270d455174c1a6028f")]
 [assembly: System.Reflection.AssemblyProductAttribute("SecureLab.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SecureLab.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

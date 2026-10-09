@@ -2251,11 +2251,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\КНУ\\4 курс\\ПТПІБ\\Лабораторна 1\\starter\\starter-project\\src\\SecureLab.Api\\SecureLab.Api.csproj",
+      "projectUniqueName": "D:\\КНУ\\4 курс\\ПТПІБ\\Лабораторна 2\\Захист\\Project\\src\\SecureLab.Api\\SecureLab.Api.csproj",
       "projectName": "SecureLab.Api",
-      "projectPath": "D:\\КНУ\\4 курс\\ПТПІБ\\Лабораторна 1\\starter\\starter-project\\src\\SecureLab.Api\\SecureLab.Api.csproj",
+      "projectPath": "D:\\КНУ\\4 курс\\ПТПІБ\\Лабораторна 2\\Захист\\Project\\src\\SecureLab.Api\\SecureLab.Api.csproj",
       "packagesPath": "C:\\Users\\bogchek\\.nuget\\packages\\",
-      "outputPath": "D:\\КНУ\\4 курс\\ПТПІБ\\Лабораторна 1\\starter\\starter-project\\src\\SecureLab.Api\\obj\\",
+      "outputPath": "D:\\КНУ\\4 курс\\ПТПІБ\\Лабораторна 2\\Захист\\Project\\src\\SecureLab.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

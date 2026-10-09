@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "HEKVbAM/sMY=",
+  "dgSpecHash": "vgrMjGUS6Z8=",
   "success": true,
-  "projectFilePath": "D:\\КНУ\\4 курс\\ПТПІБ\\Лабораторна 1\\starter\\starter-project\\src\\SecureLab.Api\\SecureLab.Api.csproj",
+  "projectFilePath": "D:\\КНУ\\4 курс\\ПТПІБ\\Лабораторна 2\\Захист\\Project\\src\\SecureLab.api\\SecureLab.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\bogchek\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\bogchek\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.10\\microsoft.aspnetcore.openapi.10.0.10.nupkg.sha512",
