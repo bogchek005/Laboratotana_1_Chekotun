@@ -1,14 +1,14 @@
 
 @baseUrl = http://localhost:5080
 
-@password = Bogdan_2005;
+@password = 1234;
 
 ### ID користувачів із DbSeeder.cs
 @aliceId = 10000000-0000-0000-0000-000000000001;
 @bobId = 10000000-0000-0000-0000-000000000002;
 ###
-@aliceCookie = CfDJ8JuZnfBZEelKshJWJ0bC948rorxjY2nAUNRvyAUb1E95X9CVlUNMiUOKRyelfGoPRgVh_N16nAfzpznemSwGMRSfPkPG8bndmctThkMvzIQjd27aiRDcKmTYccPdeNXaPzoBICEZE3Znehc3mP3ir1NsaNsHVan7vVVaRG7CP1DOYQ0MFOBbS9yPgDhhOZmVSlHOCDcyz7zqcuGDfvgagPKGfmAOs6D5bdbia2JjHplU1ctqhQvE15L3SMKH6Z1TGo8XmnqfFlvkYSmb3ZAKDrFV8kWA1cTEA8QihwcmqXBIy_YINBzjwPOfX6zBeMgoRqieoz7XZTziFIpImx8h3RSh_YEABlvxeZIuCyuBci5w0qLu-TWiIOJHNxMGF_XU3iy8sSneNnLKkeUfeIE8yMVvCKQOv5OiPrembAHeGaBdYyoAidn_G5W5oI4b-2CIMfxZIo2ojw1bsHetDLiFeAc8XfdYj8MH0666SdSENM-uecbtctmR_StGgOxWA3_0f4RiQyMpnBqp5omRHNpWXfT6kDacu5VNjdHwOnzqQ31vuuWNw-dUlkBWZNtnzEGzXpFFA4x3Ot90AKY1GVkotgD-IBH2-XsiGZ2U5JDn7bm6lGyEzE8HXXNvpL-R0AiYK5oupVGasXMrGlm8onblUz5xpPqXh_fq0i7WDfI1bUIuZI3BkN4ttDS0EiNVc_aTICBfETIB6HiyqNIWz1Ql8-xiPxqMjpP6-TvZjlKhgFpflyGKFPd475T_x3peUPPP35nX4yZ6JnLo7vyGaaZeq0WxMrz4nRHFzs4zIO6BWFgde6Fnde9b1nEBCe2FO9JKKBfECBMDZ3e_9-IOYLRXySU;
-@bobCookie = -;
+@aliceCookie = аа;
+@bobCookie = аа;
 
 
 ### A-01. Анонімне створення інциденту
