@@ -1,8 +1,14 @@
+
+using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading.Tasks;
 using SecureLab.Api.Data;
 using SecureLab.Api.Presentation.Contracts;
+using Xunit;
 
 namespace SecureLab.Api.Tests;
 
@@ -11,24 +17,55 @@ public sealed class IncidentEndpointTests(SecureLabApiFactory factory)
 {
     private readonly HttpClient _client = factory.CreateClient();
 
+    // Допоміжний метод входу через Identity
+    private async Task LoginAsync(string userName = "alice")
+    {
+        var password = Environment.GetEnvironmentVariable(
+            "SeedUsers__Password")
+            ?? throw new InvalidOperationException(
+                "Set SeedUsers__Password before running tests.");
+
+        using var response = await _client.PostAsJsonAsync(
+            "/api/auth/login",
+            new
+            {
+                userName,
+                password
+            });
+
+        Assert.Equal(
+            HttpStatusCode.NoContent,
+            response.StatusCode);
+    }
+
     [Fact]
     public async Task GetList_ReturnsSeededIncidents()
     {
-        var incidents = await _client.GetFromJsonAsync<List<IncidentListItemResponse>>(
-            "/api/incidents");
+        var incidents = await _client.GetFromJsonAsync<
+            List<IncidentListItemResponse>>("/api/incidents");
 
         Assert.NotNull(incidents);
-        Assert.Contains(incidents, incident => incident.Id == DbSeeder.AliceIncidentId);
-        Assert.Contains(incidents, incident => incident.Id == DbSeeder.BobIncidentId);
+        Assert.Contains(
+            incidents,
+            incident => incident.Id == DbSeeder.AliceIncidentId);
+        Assert.Contains(
+            incidents,
+            incident => incident.Id == DbSeeder.BobIncidentId);
     }
 
     [Fact]
     public async Task GetDetails_ForUnknownId_ReturnsProblemDetails404()
     {
-        using var response = await _client.GetAsync($"/api/incidents/{Guid.NewGuid()}");
+        using var response = await _client.GetAsync(
+            $"/api/incidents/{Guid.NewGuid()}");
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+        Assert.Equal(
+            HttpStatusCode.NotFound,
+            response.StatusCode);
+
+        Assert.Equal(
+            "application/problem+json",
+            response.Content.Headers.ContentType?.MediaType);
     }
 
     [Fact]
@@ -36,13 +73,25 @@ public sealed class IncidentEndpointTests(SecureLabApiFactory factory)
     {
         using var response = await _client.GetAsync(
             $"/api/incidents/{DbSeeder.AliceIncidentId}");
+
         var json = await response.Content.ReadAsStringAsync();
         using var document = JsonDocument.Parse(json);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.False(document.RootElement.TryGetProperty("ownerUserId", out _));
-        Assert.False(document.RootElement.TryGetProperty("email", out _));
-        Assert.Equal("Аліса Коваль", document.RootElement.GetProperty("ownerDisplayName").GetString());
+
+        Assert.False(
+            document.RootElement.TryGetProperty(
+                "ownerUserId", out _));
+
+        Assert.False(
+            document.RootElement.TryGetProperty(
+                "email", out _));
+
+        Assert.Equal(
+            "Аліса Коваль",
+            document.RootElement
+                .GetProperty("ownerDisplayName")
+                .GetString());
     }
 
     [Fact]
@@ -50,12 +99,23 @@ public sealed class IncidentEndpointTests(SecureLabApiFactory factory)
     {
         var script = await _client.GetStringAsync("/app.js");
 
-        Assert.DoesNotContain("innerHTML", script, StringComparison.Ordinal);
-        Assert.Contains("textContent", script, StringComparison.Ordinal);
+        Assert.DoesNotContain(
+            "innerHTML",
+            script,
+            StringComparison.Ordinal);
+
+        Assert.Contains(
+            "textContent",
+            script,
+            StringComparison.Ordinal);
     }
+
     [Fact]
     public async Task Post_InvalidDto_ReturnsValidationProblem()
     {
+        // НОВЕ: спочатку виконуємо вхід
+        await LoginAsync();
+
         var body = new
         {
             title = " ",
@@ -68,7 +128,10 @@ public sealed class IncidentEndpointTests(SecureLabApiFactory factory)
             "/api/incidents",
             body);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(
+            HttpStatusCode.BadRequest,
+            response.StatusCode);
+
         Assert.Equal(
             "application/problem+json",
             response.Content.Headers.ContentType?.MediaType);
@@ -80,16 +143,28 @@ public sealed class IncidentEndpointTests(SecureLabApiFactory factory)
         Assert.Contains("\"severity\"", json);
         Assert.Contains("\"occurredAtUtc\"", json);
 
-        Assert.DoesNotContain("stack trace", json, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("SELECT", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(
+            "stack trace",
+            json,
+            StringComparison.OrdinalIgnoreCase);
+
+        Assert.DoesNotContain(
+            "SELECT",
+            json,
+            StringComparison.OrdinalIgnoreCase);
     }
+
     [Fact]
     public async Task Post_DuplicateActiveTitle_ReturnsConflict()
     {
+        // НОВЕ: спочатку виконуємо вхід
+        await LoginAsync();
+
         var body = new
         {
             title = "Підозрілий лист із вкладенням",
-            description = "Опис для перевірки конфлікту предметного правила.",
+            description =
+                "Опис для перевірки конфлікту предметного правила.",
             severity = "Low",
             occurredAtUtc = DateTimeOffset.UtcNow.AddMinutes(-10)
         };
@@ -98,16 +173,29 @@ public sealed class IncidentEndpointTests(SecureLabApiFactory factory)
             "/api/incidents",
             body);
 
-        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        Assert.Equal(
+            HttpStatusCode.Conflict,
+            response.StatusCode);
+
         Assert.Equal(
             "application/problem+json",
             response.Content.Headers.ContentType?.MediaType);
 
         var json = await response.Content.ReadAsStringAsync();
 
-        Assert.Contains("уже існує", json, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "уже існує",
+            json,
+            StringComparison.OrdinalIgnoreCase);
 
-        Assert.DoesNotContain("SELECT", json, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("connection", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(
+            "SELECT",
+            json,
+            StringComparison.OrdinalIgnoreCase);
+
+        Assert.DoesNotContain(
+            "connection",
+            json,
+            StringComparison.OrdinalIgnoreCase);
     }
 }

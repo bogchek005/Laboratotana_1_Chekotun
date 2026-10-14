@@ -1,0 +1,146 @@
+
+@baseUrl = http://localhost:5080
+
+@password = Bogdan_2005;
+
+### ID користувачів із DbSeeder.cs
+@aliceId = 10000000-0000-0000-0000-000000000001;
+@bobId = 10000000-0000-0000-0000-000000000002;
+###
+@aliceCookie = CfDJ8JuZnfBZEelKshJWJ0bC948rorxjY2nAUNRvyAUb1E95X9CVlUNMiUOKRyelfGoPRgVh_N16nAfzpznemSwGMRSfPkPG8bndmctThkMvzIQjd27aiRDcKmTYccPdeNXaPzoBICEZE3Znehc3mP3ir1NsaNsHVan7vVVaRG7CP1DOYQ0MFOBbS9yPgDhhOZmVSlHOCDcyz7zqcuGDfvgagPKGfmAOs6D5bdbia2JjHplU1ctqhQvE15L3SMKH6Z1TGo8XmnqfFlvkYSmb3ZAKDrFV8kWA1cTEA8QihwcmqXBIy_YINBzjwPOfX6zBeMgoRqieoz7XZTziFIpImx8h3RSh_YEABlvxeZIuCyuBci5w0qLu-TWiIOJHNxMGF_XU3iy8sSneNnLKkeUfeIE8yMVvCKQOv5OiPrembAHeGaBdYyoAidn_G5W5oI4b-2CIMfxZIo2ojw1bsHetDLiFeAc8XfdYj8MH0666SdSENM-uecbtctmR_StGgOxWA3_0f4RiQyMpnBqp5omRHNpWXfT6kDacu5VNjdHwOnzqQ31vuuWNw-dUlkBWZNtnzEGzXpFFA4x3Ot90AKY1GVkotgD-IBH2-XsiGZ2U5JDn7bm6lGyEzE8HXXNvpL-R0AiYK5oupVGasXMrGlm8onblUz5xpPqXh_fq0i7WDfI1bUIuZI3BkN4ttDS0EiNVc_aTICBfETIB6HiyqNIWz1Ql8-xiPxqMjpP6-TvZjlKhgFpflyGKFPd475T_x3peUPPP35nX4yZ6JnLo7vyGaaZeq0WxMrz4nRHFzs4zIO6BWFgde6Fnde9b1nEBCe2FO9JKKBfECBMDZ3e_9-IOYLRXySU;
+@bobCookie = -;
+
+
+### A-01. Анонімне створення інциденту
+# Очікується: 401 Unauthorized
+
+POST {{baseUrl}}/api/incidents
+Content-Type: application/json
+
+{
+  "title": "A01_Anonymous",
+  "description": "Перевірка доступу без авторизації",
+  "severity": "Low",
+  "occurredAtUtc": "2026-10-14T10:00:00Z"
+}
+
+
+### A-02.1. Вхід користувача Alice
+# Очікується: 204 No Content
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "alice",
+  "password": "{{password}}"
+}
+
+
+### A-02.2. Отримання профілю Alice
+# Очікується: 200 OK
+
+GET {{baseUrl}}/api/me
+Cookie: {{aliceCookie}}
+
+
+### A-03.1. Профіль Alice без підробленого заголовка
+# Очікується: 200 OK
+
+GET {{baseUrl}}/api/me
+Cookie: {{aliceCookie}}
+
+
+### A-03.2. Підроблення X-Demo-UserId
+# Очікується: 200 OK
+
+GET {{baseUrl}}/api/me
+Cookie: {{aliceCookie}}
+X-Demo-UserId: {{bobId}}
+
+
+### A-04.1. Вхід користувача Bob
+# Очікується: 204 No Content
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "bob",
+  "password": "{{password}}"
+}
+
+
+### A-04.2. Створення інциденту від Bob
+# Очікується: 201 Created
+
+POST {{baseUrl}}/api/incidents
+Content-Type: application/json
+Cookie: {{bobCookie}}
+
+{
+  "title": "A04_Bob_HTTP",
+  "description": "Інцидент створено користувачем Bob",
+  "severity": "Low",
+  "occurredAtUtc": "2026-10-14T10:00:00Z"
+}
+
+
+### A-05. Спроба підмінити власника на Alice
+# Очікується: 201 Created
+
+POST {{baseUrl}}/api/incidents
+Content-Type: application/json
+Cookie: {{bobCookie}}
+
+{
+  "title": "A05_Bob_Spoof_HTTP",
+  "description": "Перевірка підміни власника інциденту",
+  "severity": "Low",
+  "occurredAtUtc": "2026-10-14T10:00:00Z",
+  "ownerUserId": "{{aliceId}}"
+}
+
+
+### A-06.1. Перевірка профілю перед виходом
+# Очікується: 200 OK
+
+GET {{baseUrl}}/api/me
+Cookie: {{aliceCookie}}
+
+
+### A-06.2. Вихід користувача Alice
+# Очікується: 204 No Content
+
+POST {{baseUrl}}/api/auth/logout
+Cookie: {{aliceCookie}}
+
+
+### A-06.3. Профіль після виходу
+# Очікується: 401 Unauthorized
+
+GET {{baseUrl}}/api/me
+
+
+### A-07.1. Вхід Alice з неправильним паролем
+# Очікується: 401 Unauthorized
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "alice",
+  "password": "IncorrectPassword_123!"
+}
+
+
+### A-07.2. Вхід неіснуючого користувача
+# Очікується: 401 Unauthorized
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "unknown_user_987654",
+  "password": "IncorrectPassword_123!"
+}

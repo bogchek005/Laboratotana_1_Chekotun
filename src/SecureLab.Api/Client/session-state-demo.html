@@ -1,0 +1,94 @@
+
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>Навчальна проба стану сеансу</title>
+</head>
+<body>
+  <h1>Стан cookie-сеансу</h1>
+
+  <p id="anonymous" hidden>Не ввійшли.</p>
+  <p id="signed-in" hidden>Сеанс активний.</p>
+  <p id="unknown">Стан ще не перевірено.</p>
+
+  <form id="login">
+    <label>
+      Ім’я користувача
+      <input name="userName" required>
+    </label>
+    <label>
+      Пароль
+      <input name="password" type="password" required>
+    </label>
+    <button>Увійти</button>
+  </form>
+
+  <button id="logout" type="button">Вийти</button>
+  <p id="result" role="status"></p>
+
+  <section>
+    <h2>Реєстрація</h2>
+
+    <form id="register-form">
+      <input name="userName"
+             placeholder="Логін" required>
+
+      <input name="email" type="email"
+             placeholder="Email" required>
+
+      <input name="displayName"
+             placeholder="Ім'я профілю" required>
+
+      <input name="password" type="password"
+             placeholder="Пароль" required>
+
+      <button type="submit">
+        Зареєструватися
+      </button>
+    </form>
+
+    <p id="register-result"></p>
+  </section>
+
+  <section>
+    <h2>Мій профіль</h2>
+
+    <button id="profile-button" type="button">
+      Завантажити профіль
+    </button>
+
+    <pre id="profile-result"></pre>
+  </section>
+
+  <section>
+    <h2>Новий інцидент</h2>
+
+    <form id="incident-form">
+      <input name="title"
+             placeholder="Назва" required>
+
+      <textarea name="description"
+                placeholder="Опис" required></textarea>
+
+      <select name="severity">
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+        <option value="Critical">Critical</option>
+      </select>
+
+      <input name="occurredAtUtc"
+             type="datetime-local" required>
+
+      <button type="submit">
+        Створити інцидент
+      </button>
+    </form>
+
+    <p id="incident-result"></p>
+  </section>
+
+  <script type="module" src="./session-state-demo.js"></script>
+</body>
+</html>

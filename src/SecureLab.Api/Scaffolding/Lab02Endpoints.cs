@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SecureLab.Api.Data;
 using SecureLab.Api.Data.Entities;
 using SecureLab.Api.Presentation.Contracts;
+using System.Security.Claims;
 
 namespace SecureLab.Api.Scaffolding;
 
@@ -74,7 +75,7 @@ public static class Lab02Endpoints
             .ToListAsync(ct);
 
         return Results.Ok(items);});
-        app.MapPost("/api/incidents", async (CreateIncidentRequest request, SecureLabDbContext db, CancellationToken ct) =>
+        app.MapPost("/api/incidents", async (CreateIncidentRequest request, SecureLabDbContext db, HttpContext httpContext, CancellationToken ct) =>
         {
             var now = DateTimeOffset.UtcNow;
             var errors = new Dictionary<string, string[]>();
@@ -147,6 +148,14 @@ public static class Lab02Endpoints
                 return Results.ValidationProblem(errors);
             }
 
+            var userIdValue = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(userIdValue, out var verifiedUserId))
+            {
+                return Results.Problem(
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+
             // 6. Перевірка предметного конфлікту — T-03
             var duplicateExists = await db.Incidents.AnyAsync(
                 item =>
@@ -169,7 +178,7 @@ public static class Lab02Endpoints
             var incident = new Incident
             {
                 Id = Guid.NewGuid(),
-                OwnerUserId = DbSeeder.AliceId,
+                OwnerUserId = verifiedUserId,
                 Title = title,
                 Description = description,
                 Severity = severity,
@@ -194,7 +203,7 @@ public static class Lab02Endpoints
             return Results.Created(
                 $"/api/incidents/{incident.Id}",
                 response);
-        });
+        }).RequireAuthorization();
     }
     private static string EscapeLike(string value)
     {
