@@ -8,15 +8,27 @@ namespace SecureLab.Api.Application.Incidents;
 public sealed class IncidentQueries(SecureLabDbContext dbContext, ILogger<IncidentQueries> logger)
 {
     public async Task<IReadOnlyList<IncidentListItemResponse>> GetListAsync(
-        IncidentStatus? status,
-        CancellationToken cancellationToken)
+    IncidentStatus? status,
+    Guid currentUserId,
+    bool canReadAll,
+    CancellationToken cancellationToken)
     {
-        logger.LogInformation("Loading incidents with status filter {Status}", status);
+        logger.LogInformation(
+            "Loading authorized incidents with status {Status}",
+            status);
 
         var query = dbContext.Incidents.AsNoTracking();
+
+        if (!canReadAll)
+        {
+            query = query.Where(
+                incident => incident.OwnerUserId == currentUserId);
+        }
+
         if (status is not null)
         {
-            query = query.Where(incident => incident.Status == status);
+            query = query.Where(
+                incident => incident.Status == status);
         }
 
         return await query
@@ -31,13 +43,21 @@ public sealed class IncidentQueries(SecureLabDbContext dbContext, ILogger<Incide
             .ToListAsync(cancellationToken);
     }
 
-    public Task<IncidentDetailsResponse?> GetDetailsAsync(Guid id, CancellationToken cancellationToken)
+    public Task<IncidentDetailsResponse?> GetDetailsAsync(
+    Guid id,
+    Guid currentUserId,
+    bool canReadAll,
+    CancellationToken cancellationToken)
     {
-        logger.LogInformation("Loading incident {IncidentId}", id);
+        logger.LogInformation(
+            "Loading authorized incident {IncidentId}",
+            id);
 
         return dbContext.Incidents
             .AsNoTracking()
-            .Where(incident => incident.Id == id)
+            .Where(incident =>
+                incident.Id == id &&
+                (canReadAll || incident.OwnerUserId == currentUserId))
             .Select(incident => new IncidentDetailsResponse(
                 incident.Id,
                 incident.Title,

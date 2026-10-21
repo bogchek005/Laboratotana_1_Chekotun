@@ -39,23 +39,26 @@ public sealed class IncidentEndpointTests(SecureLabApiFactory factory)
     }
 
     [Fact]
-    public async Task GetList_ReturnsSeededIncidents()
+    public async Task GetList_ReturnsOnlyAliceIncidents()
     {
+        await LoginAsync("alice");
+
         var incidents = await _client.GetFromJsonAsync<
             List<IncidentListItemResponse>>("/api/incidents");
 
         Assert.NotNull(incidents);
-        Assert.Contains(
-            incidents,
+
+        Assert.Contains(incidents!,
             incident => incident.Id == DbSeeder.AliceIncidentId);
-        Assert.Contains(
-            incidents,
+
+        Assert.DoesNotContain(incidents!,
             incident => incident.Id == DbSeeder.BobIncidentId);
     }
 
     [Fact]
     public async Task GetDetails_ForUnknownId_ReturnsProblemDetails404()
     {
+        await LoginAsync("alice");
         using var response = await _client.GetAsync(
             $"/api/incidents/{Guid.NewGuid()}");
 
@@ -71,6 +74,7 @@ public sealed class IncidentEndpointTests(SecureLabApiFactory factory)
     [Fact]
     public async Task GetDetails_DoesNotExposeInternalOwnerFields()
     {
+        await LoginAsync("alice");
         using var response = await _client.GetAsync(
             $"/api/incidents/{DbSeeder.AliceIncidentId}");
 
@@ -157,31 +161,44 @@ public sealed class IncidentEndpointTests(SecureLabApiFactory factory)
     [Fact]
     public async Task Post_DuplicateActiveTitle_ReturnsConflict()
     {
-        // НОВЕ: спочатку виконуємо вхід
+        // Авторизація під навчальним користувачем.
         await LoginAsync();
+
+        // Унікальна назва, щоб тест не залежав від seed.
+        var title = "LR04 Duplicate Test " + Guid.NewGuid();
 
         var body = new
         {
-            title = "Підозрілий лист із вкладенням",
-            description =
-                "Опис для перевірки конфлікту предметного правила.",
+            title,
+            description = "Перевірка правила унікальності активних інцидентів.",
             severity = "Low",
             occurredAtUtc = DateTimeOffset.UtcNow.AddMinutes(-10)
         };
 
-        using var response = await _client.PostAsJsonAsync(
+        // 1. Створюємо перший інцидент.
+        using var firstResponse = await _client.PostAsJsonAsync(
             "/api/incidents",
             body);
 
         Assert.Equal(
+            HttpStatusCode.Created,
+            firstResponse.StatusCode);
+
+        // 2. Повторюємо POST з тією самою назвою.
+        using var duplicateResponse = await _client.PostAsJsonAsync(
+            "/api/incidents",
+            body);
+
+        // 3. Другий запит повинен отримати 409 Conflict.
+        Assert.Equal(
             HttpStatusCode.Conflict,
-            response.StatusCode);
+            duplicateResponse.StatusCode);
 
         Assert.Equal(
             "application/problem+json",
-            response.Content.Headers.ContentType?.MediaType);
+            duplicateResponse.Content.Headers.ContentType?.MediaType);
 
-        var json = await response.Content.ReadAsStringAsync();
+        var json = await duplicateResponse.Content.ReadAsStringAsync();
 
         Assert.Contains(
             "уже існує",
