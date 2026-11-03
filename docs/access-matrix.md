@@ -182,3 +182,211 @@ Endpoint: `POST /api/incidents/{id}/triage`
 
 Аудит відмови: при забороненій спробі виконання triage сервер має записати подію `authorization.denied`, яка містить ідентифікатор автентифікованого користувача, дію, ідентифікатор ресурсу, результат, час події та trace id запиту без паролів, cookie, токенів і повного HTTP-body.
 
+
+
+\## Паспорт перевірки повторного triage
+
+
+
+Ресурс: окремий disposable Incident, власник Alice.
+
+Дія: POST /api/incidents/{id}/triage.
+
+Початковий стан: New.
+
+Початкова кількість записів історії: 0.
+
+
+
+F = 404 Not Found — приховування чужого інциденту від Reporter.
+
+K = 403 Forbidden — відмова в triage через відсутність потрібної ролі.
+
+T = 409 Conflict — відмова через поточний стан, відмінний від New.
+
+
+
+Success = 204 No Content.
+
+Дозволений перехід: New -> Triaged.
+
+
+
+\### Прогноз role × current status для інциденту Alice
+
+
+
+1\) Morgan / Analyst / Role gate пройдено; state gate пройдено; 204; Triaged; history +1 / Role gate пройдено; state gate відхиляє; T = 409; Triaged; history без змін;
+
+2\) Bob / Reporter / Ownership gate відхиляє; F = 404; New без змін / Ownership gate відхиляє; F = 404; Triaged без змін;
+
+
+
+K = 403 у цій таблиці не спостерігається:
+
+Bob звертається до чужого інциденту, тому раніше спрацьовує F.
+
+
+
+\### Прогноз основної послідовної пари
+
+
+
+Перший запит Morgan:
+
+HTTP 204; status Triaged; history 1.
+
+
+
+Другий, точно такий самий запит Morgan до того самого ID:
+
+HTTP 409; status Triaged; history 1.
+
+
+
+Між запитами немає reset, нового fixture або прямої зміни стану в БД.
+
+
+
+\### SQL для незалежної перевірки стану
+
+
+
+```sql
+
+SELECT
+
+\&#x20;   i.id,
+
+\&#x20;   i.owner\\\_user\\\_id,
+
+\&#x20;   i.status,
+
+\&#x20;   (
+
+\&#x20;       SELECT COUNT(\\\*)
+
+\&#x20;       FROM incident\\\_status\\\_history h
+
+\&#x20;       WHERE h.incident\\\_id = i.id
+
+\&#x20;   ) AS history\\\_count
+
+FROM incidents i
+
+WHERE i.id = '91000000-0000-0000-0000-000000000041';
+
+```
+
+
+
+Прогноз до запуску: New, history\_count = 0.
+
+Прогноз після першого запиту Morgan: Triaged, history\_count = 1.
+
+Прогноз після другого запиту Morgan: Triaged, history\_count = 1.
+
+
+
+\###Контрприклад слабкого тесту
+
+
+
+Слабкий тест:
+
+
+
+```csharp
+
+using var fisrt = await morgan.PostAsync(url, null);
+
+using var second = await morgan.PostAsync(url, null);
+
+
+
+Assert.True(fisrt.IsSuccessStatusCode);
+
+Assert.True(second.IsSuccessStatusCode);
+
+```
+
+Контрприклад реалізації:
+
+перевірку поточного стану видалено.
+
+Кожен запит встановлює Triaged, додає запис історії
+
+та повертає 204.
+
+
+
+Тоді слабкий тест проходить:
+
+перший запит — 204, другий — 204.
+
+
+
+Але в БД виникають два записи:
+
+New -> Triaged;
+
+Triaged -> Triaged.
+
+
+
+Стан Triaged після двох запитів сам по собі
+
+не виключає помилкового повторного переходу.
+
+
+
+Контрольні assertions:
+
+
+
+```csharp
+
+Assert.Equal(HttpStatusCode.Conflict, second.StatusCode);
+
+Assert.Equal(afterfirst.History, aftersecond.History);
+
+Assert.Equal(1, aftersecond.History);
+
+```
+
+
+
+Для наведеної помилкової реалізації:
+
+очікується 409, фактично 204;
+
+очікується один запис історії, фактично два.
+
+
+
+Це письмовий контрприклад.
+
+Помилкова реалізація не застосовувалася до робочого API.
+
+
+
+\### Чому другий запит виконується до того самого fixture
+
+
+
+Якщо другий запит спрямувати до нового інциденту у стані New,
+
+обидва запити перевірять лише дозволений перехід New -> Triaged.
+
+
+
+Такий тест не перевірить повторну операцію над уже Triaged
+
+і не доведе роботу state gate.
+
+
+
+У цьому маршруті другий запит використовує той самий ID
+
+та стан, збережений першим запитом.
+
