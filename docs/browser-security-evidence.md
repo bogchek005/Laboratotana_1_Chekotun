@@ -48,9 +48,9 @@ py -3 -m http.server 4174 --bind localhost --directory demonstrations/cors-probe
 
 ## Normal flow і карта
 
-Вхід через /auth-lab.html: ім'я alice або morgan, власний навчальний пароль; зафіксовано Login: 204. На /browser-lab.html кнопка «Прочитати» викликає GET /api/incidents/{id}. Для Alice seed Guid — 20000000-0000-0000-0000-000000000001; зафіксовано GET: 200, опис і публічний коментар ([рисунки 5–7](figures.md#рисунок-5)).
+Вхід через /auth-lab.html: ім'я alice або morgan, власний навчальний пароль; зафіксовано Login: 204. На /browser-lab.html кнопка «Прочитати» викликає GET /api/incidents/{id}. Для Alice seed Guid — 20000000-0000-0000-0000-000000000001; зафіксовано GET: 200, опис і публічний коментар (рисунки 5–7).
 
-[Повна карта Description і comments\[].text](source-to-sink.md).
+\[Повна карта Description і comments\[].text](source-to-sink.md).
 
 ## Finding XSS
 

@@ -19,7 +19,7 @@
 |Sink після fix|#description.replaceChildren(createTextElement("p", current.description))|Helper створює елемент, потім element.textContent = text ?? ""|Текстовий вузол|
 |Поле редагування|#edit.elements.description.value = current.description|Запис у value, без HTML parsing|Значення textarea|
 
-Докази: [рисунки 8–17](figures.md#рисунок-8), [31–37](figures.md#рисунок-31), [38–40](figures.md#рисунок-38).
+Докази: рисунки 8–17, 31–37, 38–40.
 
 ## Потік IncidentComment.Text
 
@@ -35,7 +35,7 @@
 |Client після fix|comments.append(createTextElement("p", comment.text))|Спільний helper із textContent|
 |Sink після fix|Текстовий вузол|Видимий marker, без створення img|
 
-Внутрішній коментар ...000000000003 не замінювався. У надісланому baseline деталей фільтр `.Where(comment => !comment.IsInternal)` відокремлює внутрішні коментарі. Докази: [рисунки 21–30](figures.md#рисунок-21).
+Внутрішній коментар ...000000000003 не замінювався. У надісланому baseline деталей фільтр `.Where(comment => !comment.IsInternal)` відокремлює внутрішні коментарі. Докази: рисунки 21–30.
 
 ## Інвентаризація власних DOM sinks у досліджуваному flow
 
