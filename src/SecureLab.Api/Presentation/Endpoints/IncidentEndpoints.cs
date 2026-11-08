@@ -376,6 +376,19 @@ public static class IncidentEndpoints
         // 10. Зберігаємо зміну.
         await dbContext.SaveChangesAsync(cancellationToken);
 
+
+        var auditLogger = loggerFactory.CreateLogger("SecurityAudit");
+
+        auditLogger.LogInformation(
+            "audit.event Subject={Subject} " +
+            "Action={Action} Resource={Resource} " +
+            "Result={Result} Time={Time}",
+            currentUserId,
+            "incident.triage",
+            incident.Id,
+            "success",
+            DateTimeOffset.UtcNow);
+
         // 11. Повертаємо успішний результат.
         return Results.NoContent();
     }
