@@ -1,7 +1,7 @@
 
 @baseUrl = http://localhost:5080
 
-@password = Bogdan_2005;
+@password = {{$processEnv SeedUsers__Password}};
 
 ### ID користувачів із DbSeeder.cs
 @aliceId = 10000000-0000-0000-0000-000000000001;
