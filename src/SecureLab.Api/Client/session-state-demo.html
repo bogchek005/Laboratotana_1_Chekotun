@@ -6,89 +6,92 @@
   <title>Навчальна проба стану сеансу</title>
 </head>
 <body>
-  <h1>Стан cookie-сеансу</h1>
+    <h1>Стан cookie-сеансу</h1>
 
-  <p id="anonymous" hidden>Не ввійшли.</p>
-  <p id="signed-in" hidden>Сеанс активний.</p>
-  <p id="unknown">Стан ще не перевірено.</p>
+    <p id="anonymous" hidden>Не ввійшли.</p>
+    <p id="signed-in" hidden>Сеанс активний.</p>
+    <p id="unknown">Стан ще не перевірено.</p>
 
-  <form id="login">
-    <label>
-      Ім’я користувача
-      <input name="userName" required>
-    </label>
-    <label>
-      Пароль
-      <input name="password" type="password" required>
-    </label>
-    <button>Увійти</button>
-  </form>
-
-  <button id="logout" type="button">Вийти</button>
-  <p id="result" role="status"></p>
-
-  <section>
-    <h2>Реєстрація</h2>
-
-    <form id="register-form">
-      <input name="userName"
-             placeholder="Логін" required>
-
-      <input name="email" type="email"
-             placeholder="Email" required>
-
-      <input name="displayName"
-             placeholder="Ім'я профілю" required>
-
-      <input name="password" type="password"
-             placeholder="Пароль" required>
-
-      <button type="submit">
-        Зареєструватися
-      </button>
+    <form id="login">
+        <label>
+            Ім’я користувача
+            <input name="userName" required>
+        </label>
+        <label>
+            Пароль
+            <input name="password" type="password" required>
+        </label>
+        <button>Увійти</button>
     </form>
 
-    <p id="register-result"></p>
-  </section>
+    <button id="logout" type="button">Вийти</button>
+    <p id="result" role="status"></p>
 
-  <section>
-    <h2>Мій профіль</h2>
+    <section>
+        <h2>Реєстрація</h2>
 
-    <button id="profile-button" type="button">
-      Завантажити профіль
-    </button>
+        <form id="register-form">
+            <input name="userName"
+                   placeholder="Логін" required>
 
-    <pre id="profile-result"></pre>
-  </section>
+            <input name="email" type="email"
+                   placeholder="Email" required>
 
-  <section>
-    <h2>Новий інцидент</h2>
+            <input name="displayName"
+                   placeholder="Ім'я профілю" required>
 
-    <form id="incident-form">
-      <input name="title"
-             placeholder="Назва" required>
+            <input name="password" type="password"
+                   placeholder="Пароль" required>
 
-      <textarea name="description"
-                placeholder="Опис" required></textarea>
+            <button type="submit">
+                Зареєструватися
+            </button>
+        </form>
 
-      <select name="severity">
-        <option value="Low">Low</option>
-        <option value="Medium">Medium</option>
-        <option value="High">High</option>
-        <option value="Critical">Critical</option>
-      </select>
+        <p id="register-result"></p>
+    </section>
 
-      <input name="occurredAtUtc"
-             type="datetime-local" required>
+    <section>
+        <h2>Мій профіль</h2>
 
-      <button type="submit">
-        Створити інцидент
-      </button>
-    </form>
+        <button id="profile-button" type="button">
+            Завантажити профіль
+        </button>
 
-    <p id="incident-result"></p>
-  </section>
+        <pre id="profile-result"></pre>
+    </section>
 
-  <script type="module" src="./session-state-demo.js"></script>
+    <section>
+        <h2>Новий інцидент</h2>
+
+        <form id="incident-form">
+            <input name="title"
+                   placeholder="Назва" required>
+
+            <textarea name="description"
+                      placeholder="Опис" required></textarea>
+
+            <select name="severity">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Critical">Critical</option>
+            </select>
+
+            <input name="occurredAtUtc"
+                   type="datetime-local" required>
+
+            <button type="submit">
+                Створити інцидент
+            </button>
+        </form>
+
+        <p id="incident-result"></p>
+    </section>
+
+
+    <script src="./csrf-helper.js" defer></script>
+    <script type="module" src="./session-state-demo.js"></script>
+
 </body>
 </html>

@@ -26,6 +26,24 @@ builder.Services.AddRateLimiter(options =>
                 QueueLimit = 0,
                 AutoReplenishment = true
             }));
+
+    options.AddPolicy("search-limit", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey:
+                context.User.Identity?.IsAuthenticated == true
+                    ? context.User.FindFirst(
+                        System.Security.Claims.ClaimTypes.NameIdentifier
+                      )?.Value ?? "unknown-user"
+                    : context.Connection.RemoteIpAddress?.ToString()
+                        ?? "anonymous",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 3,
+                Window = TimeSpan.FromSeconds(10),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+
 });
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
@@ -53,6 +71,13 @@ if (builder.Environment.IsDevelopment())
         });
     });
 }
+
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+    options.Cookie.Name = "SecureLab.Antiforgery";
+    options.Cookie.HttpOnly = true;
+});
 
 var app = builder.Build();
 

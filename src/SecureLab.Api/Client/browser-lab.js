@@ -52,7 +52,7 @@ document.querySelector("#edit").addEventListener(
 
         const form = event.currentTarget;
 
-        const response = await fetch("/api/incidents", {
+        const response = await SecureLabCsrf.mutate("/api/incidents", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

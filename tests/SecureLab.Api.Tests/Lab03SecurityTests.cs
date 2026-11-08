@@ -206,6 +206,10 @@ public sealed class Lab03SecurityTests
 
         await LoginAsync(client, "bob");
 
+        await client.UseAntiforgeryTokenAsync(
+            "/api/auth/csrf-token",
+            "X-CSRF-TOKEN");
+
         var title = "A04_Bob_" +
             Guid.NewGuid().ToString("N");
 
@@ -230,6 +234,10 @@ public sealed class Lab03SecurityTests
         using var client = CreateClient();
 
         await LoginAsync(client, "bob");
+
+        await client.UseAntiforgeryTokenAsync(
+            "/api/auth/csrf-token",
+            "X-CSRF-TOKEN");
 
         var title = "A05_Bob_" +
             Guid.NewGuid().ToString("N");
@@ -266,6 +274,10 @@ public sealed class Lab03SecurityTests
         using var client = CreateClient();
 
         await LoginAsync(client, "alice");
+
+        await client.UseAntiforgeryTokenAsync(
+            "/api/auth/csrf-token",
+            "X-CSRF-TOKEN");
 
         using var before = await client.GetAsync("/api/me");
 

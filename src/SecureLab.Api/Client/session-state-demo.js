@@ -38,8 +38,12 @@ document.querySelector("#login").addEventListener("submit", async event => {
     });
     result.textContent = `Login: ${response.status}`;
 
+
     if (response.status === 204) {
-        await loadProfile();}
+        SecureLabCsrf.reset();
+        await loadProfile();
+    }
+
   } catch {
     result.textContent = "Помилка мережі під час входу.";
   } finally {
@@ -49,11 +53,20 @@ document.querySelector("#login").addEventListener("submit", async event => {
 });
 document.querySelector("#logout").addEventListener("click", async () => {
   try {
-    const response = await apiFetch("/api/auth/logout", { method: "POST" });
+      const response = await SecureLabCsrf.mutate(
+          "/api/auth/logout",
+          {
+              method: "POST"
+          }
+      );
     result.textContent = `Logout: ${response.status}`;
-    if (response.status === 204) {
-        profileResult.textContent = "";
-        incidentResult.textContent = "";}
+      if (response.status === 204) {
+          SecureLabCsrf.reset();
+
+          profileResult.textContent = "";
+          incidentResult.textContent = "";
+      }
+
   } catch {
     result.textContent = "Помилка мережі під час виходу.";
   } finally {
@@ -145,7 +158,7 @@ incidentForm.addEventListener("submit", async event => {
   };
 
   try {
-    const response = await apiFetch("/api/incidents", {
+      const response = await SecureLabCsrf.mutate("/api/incidents", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)

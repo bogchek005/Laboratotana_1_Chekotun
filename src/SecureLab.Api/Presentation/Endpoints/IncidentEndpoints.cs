@@ -1,3 +1,4 @@
+using SecureLab.Api.Security;
 using SecureLab.Api.Application.Incidents;
 using SecureLab.Api.Data.Entities;
 using SecureLab.Api.Presentation.Contracts;
@@ -16,9 +17,13 @@ public static class IncidentEndpoints
         var group = endpoints.MapGroup("/api/incidents")
             .WithTags("Incidents").RequireAuthorization();
 
-        group.MapPut("/{id:guid}", UpdateIncidentAsync).WithName("UpdateIncident");
 
-        group.MapDelete("/{id:guid}", DeleteIncidentAsync).WithName("DeleteIncident");
+        group.MapPut("/{id:guid}", UpdateIncidentAsync)
+            .WithName("UpdateIncident").AddEndpointFilter<AntiforgeryFilter>();
+
+        group.MapDelete("/{id:guid}", DeleteIncidentAsync)
+            .WithName("DeleteIncident").AddEndpointFilter<AntiforgeryFilter>();
+
 
         group.MapGet("/", GetListAsync)
             .WithName("GetIncidents")
@@ -40,7 +45,7 @@ public static class IncidentEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status409Conflict);
+            .ProducesProblem(StatusCodes.Status409Conflict).AddEndpointFilter<AntiforgeryFilter>();
 
         var commentsGroup = endpoints.MapGroup("/api/incident-comments").WithTags("Incident Comments").RequireAuthorization();
 

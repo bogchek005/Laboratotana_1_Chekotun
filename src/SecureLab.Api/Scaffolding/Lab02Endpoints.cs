@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.RateLimiting;
+using SecureLab.Api.Security;
 using Microsoft.EntityFrameworkCore;
 using SecureLab.Api.Data;
 using SecureLab.Api.Data.Entities;
@@ -74,7 +76,7 @@ public static class Lab02Endpoints
                 item.CreatedAtUtc))
             .ToListAsync(ct);
 
-        return Results.Ok(items);});
+        return Results.Ok(items);}).RequireRateLimiting("search-limit"); ;
         app.MapPost("/api/incidents", async (CreateIncidentRequest request, SecureLabDbContext db, HttpContext httpContext, CancellationToken ct) =>
         {
             var now = DateTimeOffset.UtcNow;
@@ -203,7 +205,8 @@ public static class Lab02Endpoints
             return Results.Created(
                 $"/api/incidents/{incident.Id}",
                 response);
-        }).RequireAuthorization();
+        }).RequireAuthorization()
+        .AddEndpointFilter<AntiforgeryFilter>();
     }
     private static string EscapeLike(string value)
     {

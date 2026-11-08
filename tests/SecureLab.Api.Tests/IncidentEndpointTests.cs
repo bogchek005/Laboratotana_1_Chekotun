@@ -120,6 +120,10 @@ public sealed class IncidentEndpointTests(SecureLabApiFactory factory)
         // НОВЕ: спочатку виконуємо вхід
         await LoginAsync();
 
+        await _client.UseAntiforgeryTokenAsync(
+            "/api/auth/csrf-token",
+            "X-CSRF-TOKEN");
+
         var body = new
         {
             title = " ",
@@ -163,6 +167,10 @@ public sealed class IncidentEndpointTests(SecureLabApiFactory factory)
     {
         // Авторизація під навчальним користувачем.
         await LoginAsync();
+
+        await _client.UseAntiforgeryTokenAsync(
+            "/api/auth/csrf-token",
+            "X-CSRF-TOKEN");
 
         // Унікальна назва, щоб тест не залежав від seed.
         var title = "LR04 Duplicate Test " + Guid.NewGuid();

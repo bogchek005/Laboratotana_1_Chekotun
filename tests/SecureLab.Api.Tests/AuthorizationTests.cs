@@ -103,6 +103,10 @@ public sealed class AuthorizationTests(
         using var alice =
             await factory.LoginAsync("alice", SeedPassword);
 
+        await alice.UseAntiforgeryTokenAsync(
+            "/api/auth/csrf-token",
+            "X-CSRF-TOKEN");
+
         var url =
             $"/api/incidents/{DbSeeder.SafeTextIncidentId}";
 
@@ -136,8 +140,16 @@ public sealed class AuthorizationTests(
         using var alice =
             await factory.LoginAsync("alice", SeedPassword);
 
+        await alice.UseAntiforgeryTokenAsync(
+            "/api/auth/csrf-token",
+            "X-CSRF-TOKEN");
+
         using var morgan =
             await factory.LoginAsync("morgan", SeedPassword);
+
+        await morgan.UseAntiforgeryTokenAsync(
+            "/api/auth/csrf-token",
+            "X-CSRF-TOKEN");
 
         Guid createdId = Guid.Empty;
 
